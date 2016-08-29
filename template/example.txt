@@ -1,0 +1,4 @@
+${date}${分隔符}${week}${分隔符}天气：${weather}
+
+    这是一个可以将文件模版化的工具。
+    ${description}
