@@ -7,6 +7,7 @@ import java.util.Map.Entry;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
+import com.renby.tool.ToolUtils;
 import com.renby.tool.file.FileHandler;
 import com.renby.tool.processor.sql.SqlUtils;
 
@@ -22,6 +23,8 @@ public class SqlColumnValueReplaceProcessor implements ILineProcessor {
 	public static String REGEX_INSERT = "^ *(insert) +into +([0-9a-zA-Z_$#]+) *\\((.+)\\) *values *\\((.+)\\) *;";
 	/** 字段或者值之间的间隔符号 */
 	public static String SEPARATOR = ",";
+	/** 输出SQL文件是否大写 */
+	public static final String KEY_SQL_ISUPPERCASE = "sql.isUppercase";
 	/** 输出大/小写SQL标志 */
 	private boolean isUppercase = false;
 
@@ -146,6 +149,7 @@ public class SqlColumnValueReplaceProcessor implements ILineProcessor {
 				logger.error("已跳过异常配置：{}={}", entry.getKey(), entry.getValue());
 			}
 		}
+		isUppercase = ToolUtils.getNewValue(System.getProperty(KEY_SQL_ISUPPERCASE), isUppercase);
 	}
 
 	/**

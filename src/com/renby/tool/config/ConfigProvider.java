@@ -48,7 +48,7 @@ public class ConfigProvider {
 		int seperateIndex;
 		String key;
 		String value;
-		logger.debug("开始从{}中读取配置.", configFile);
+		logger.debug("开始从[{}]中读取配置.", configFile);
 		for (String line : lines) {
 			if (line.startsWith(NOTE_RPEFIX)) {
 				continue;

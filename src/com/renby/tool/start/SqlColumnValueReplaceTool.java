@@ -21,6 +21,7 @@ public class SqlColumnValueReplaceTool {
 		String encording = ToolUtils.getNewValue(System.getProperty(KEY_SQL_ENCORDING), FileHandler.FILE_ENCORDING);
 		String filter = System.getProperty(KEY_SQL_FILTER);
 		inputPath = args.length > 0 ? args[0] : inputPath;
+		
 		ILineProcessor processor = new SqlColumnValueReplaceProcessor(ConfigProvider.getConfigMap(CONFIG_FILE));
 		FileHandler.excute(processor, new FileOperationSet(inputPath, outputPath, encording, filter));
 		System.exit(0);

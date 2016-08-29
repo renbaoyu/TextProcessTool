@@ -15,10 +15,10 @@
 		</File>
 	</appenders>
 	<loggers>
-		<logger name="com.renby.tool.FileHandler" level="trace">
+		<logger name="com.renby.tool.file.FileHandler" level="trace">
 			<appender-ref ref="File" />
 		</logger>
-		<logger name="com.renby.tool.ConfigProvider" additivity="false"
+		<logger name="com.renby.tool.config.ConfigProvider" additivity="false"
 			level="trace">
 			<appender-ref ref="Config" />
 		</logger>

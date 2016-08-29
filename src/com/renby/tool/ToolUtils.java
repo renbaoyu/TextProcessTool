@@ -19,6 +19,10 @@ public class ToolUtils {
 	public static String getNewValue(String newVal, String oldVal){
 		return isEmpty(newVal) ? oldVal : newVal;
 	}
+
+	public static boolean getNewValue(String newVal, boolean oldVal){
+		return isEmpty(newVal) ? oldVal : Boolean.valueOf(newVal);
+	}
 	
 	public static String getAbstractUserFilePath(String filename){
 		return System.getProperty("user.dir") + File.separator + filename;
