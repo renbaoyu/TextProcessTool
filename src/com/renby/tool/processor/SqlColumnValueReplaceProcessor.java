@@ -20,7 +20,9 @@ import com.renby.tool.processor.sql.SqlUtils;
 public class SqlColumnValueReplaceProcessor implements ILineProcessor {
 	private static Map<String, Map<String, String>> configs = new HashMap<String, Map<String, String>>();
 	/** 插入语句匹配正则表达式 */
-	public static String REGEX_INSERT = "^ *(insert) +into +([0-9a-zA-Z_$#]+) *\\((.+)\\) *values *\\((.+)\\) *;";
+	public static String REGEX_INSERT_STR = "^ *(insert) +into +([0-9a-zA-Z_$#]+) *\\((.+)\\) *values *\\((.+)\\) *;";
+	/** 插入语句匹配器 */
+	public static Pattern REGEX_INSERT = Pattern.compile(REGEX_INSERT_STR, Pattern.CASE_INSENSITIVE);
 	/** 字段或者值之间的间隔符号 */
 	public static String SEPARATOR = ",";
 	/** 输出SQL文件是否大写 */
@@ -72,7 +74,7 @@ public class SqlColumnValueReplaceProcessor implements ILineProcessor {
 	 * @return
 	 */
 	private SqlInfo getSqlInfo(String sql) {
-		Matcher matcher = Pattern.compile(REGEX_INSERT).matcher(sql);
+		Matcher matcher = REGEX_INSERT.matcher(sql);
 		if (!matcher.find()) {
 			logger.error("插入SQL非法：{}", sql);
 			return null;

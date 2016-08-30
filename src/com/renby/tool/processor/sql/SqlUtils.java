@@ -2,21 +2,43 @@ package com.renby.tool.processor.sql;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 public class SqlUtils {
+	/** NULL匹配器 */
+	public static Pattern REGEX_NULL = Pattern.compile("^ *(null) *", Pattern.CASE_INSENSITIVE);
+	/** 数值匹配器 */
+	public static Pattern REGEX_NUMBER = Pattern.compile("^ *([+-]{0,1}[0-9]+\\.{0,1}[0-9]*) *", Pattern.CASE_INSENSITIVE);
+
 	/**
 	 * 将sql的值部分解析为数组<br>
 	 * 例：'val1','val2','val3'
+	 * 
 	 * @param valueString
 	 * @return
 	 */
-	public static String[] SqlValueSeperate(String valueString){
+	public static String[] SqlValueSeperate(String valueString) {
 		List<String> valsList = new ArrayList<String>();
 		boolean isContent = false;
 		char c;
 		StringBuilder value = new StringBuilder();
 		for (int i = 0, startIndex = -1; i < valueString.length(); i++) {
 			c = valueString.charAt(i);
+			if (!isContent && i < valueString.length() - 1) {
+				Matcher matcher = REGEX_NULL.matcher(valueString.substring(i));
+				if (matcher.find()) {
+					valsList.add(matcher.group(1).trim());
+					i += matcher.group(0).length();
+					continue;
+				}
+				matcher = REGEX_NUMBER.matcher(valueString.substring(i));
+				if (matcher.find()) {
+					valsList.add(matcher.group(1).trim());
+					i += matcher.group(0).length();
+					continue;
+				}
+			}
 			// 值开始、结束的边界检测
 			if (isSign(valueString, i, startIndex)) {
 				isContent = !isContent;
@@ -43,7 +65,6 @@ public class SqlUtils {
 		}
 		return valsList.toArray(new String[0]);
 	}
-	
 
 	/**
 	 * 判断字符是值的起始单引号标记
