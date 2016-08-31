@@ -56,6 +56,21 @@ public class FileHandler {
 			}
 		}
 		LogManager.getLogger().info("处理文件开始.");
+		processFolder(input, processor, operSet);
+		logger.info("处理文件结束.");
+	}
+
+	/**
+	 * 处理文件夹及子文件夹下的所有指定类型的文件
+	 * 
+	 * @param file
+	 *            文件夹或文件
+	 * @param processor
+	 *            处理器
+	 * @param operSet
+	 *            文件设置
+	 */
+	private static void processFolder(File input, ILineProcessor processor, FileOperationSet operSet) {
 		if(input.isFile()){
 			if(operSet.isFilterPassed(input)){
 				processFile(input, processor, operSet);
@@ -64,13 +79,12 @@ public class FileHandler {
 			File[] files = input.listFiles();
 			for (File file : files) {
 				if(operSet.isFilterPassed(input)){
-					processFile(file, processor, operSet);
+					processFolder(file, processor, operSet);
 				}
 			}
 		}
-		logger.info("处理文件结束.");
 	}
-
+	
 	/**
 	 * 执行文件处理
 	 * 
@@ -82,8 +96,11 @@ public class FileHandler {
 	 *            文件设置
 	 */
 	private static void processFile(File file, ILineProcessor processor, FileOperationSet operSet) {
-
-		File processedFile = new File(operSet.getOutputPath(), file.getName());
+		File processedParent = new File(file.getParent().replace(operSet.getInputPath(), operSet.getOutputPath()));
+		if(!processedParent.exists()){
+			processedParent.mkdirs();
+		}
+		File processedFile = new File(processedParent, file.getName());
 		try {
 			BufferedReader reader = null;
 			OutputStreamWriter writer = null;
