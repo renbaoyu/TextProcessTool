@@ -57,7 +57,7 @@ public class SqlColumnValueReplaceProcessor implements ILineProcessor {
 		for (int i = 0; i < info.cols.length; i++) {
 			newVal = config.get(info.cols[i].trim().toLowerCase());
 			if (newVal != null) {
-				info.vals[i] = "'" + newVal + "'";
+				info.vals[i] = newVal;
 			}
 		}
 
