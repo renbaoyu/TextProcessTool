@@ -15,6 +15,7 @@ import java.io.Writer;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
+import com.renby.tool.ToolUtils;
 import com.renby.tool.processor.ILineProcessor;
 
 /**
@@ -39,7 +40,7 @@ public class FileHandler {
 	 *            文件设置
 	 */
 	public static void excute(ILineProcessor processor, FileOperationSet operSet) {
-
+		printInputInformation(operSet);
 		File input = new File(operSet.getInputPath());
 		if (!input.exists()) {
 			logger.error("输入文件/文件夹[{}]不存在.", operSet.getInputPath());
@@ -78,7 +79,7 @@ public class FileHandler {
 		}else{
 			File[] files = input.listFiles();
 			for (File file : files) {
-				if(operSet.isFilterPassed(input)){
+				if(operSet.isFilterPassed(file)){
 					processFolder(file, processor, operSet);
 				}
 			}
@@ -152,5 +153,14 @@ public class FileHandler {
 		} catch (IOException e) {
 			logger.error("关闭文件失败");
 		}
+	}
+	
+	private static void printInputInformation(FileOperationSet operSet){
+		logger.info("******************************************************************");
+		logger.info("*待处理文件或目录:{}", operSet.getInputPath());
+		logger.info("*输出目录　　　　:{}", operSet.getOutputPath());
+		logger.info("*待处理文件字符集:{}", operSet.getCharset());
+		logger.info("*处理的文件类型　:{}", ToolUtils.getNewValue(operSet.getFilter(), "All"));
+		logger.info("******************************************************************");
 	}
 }

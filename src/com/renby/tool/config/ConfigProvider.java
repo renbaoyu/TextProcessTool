@@ -42,7 +42,7 @@ public class ConfigProvider {
 		try {
 			lines = Files.readAllLines(Paths.get(configFile), Charset.forName(CONFIG_ENCORDING));
 		} catch (IOException e) {
-			logger.error("读取配置文件出错.");
+			logger.error("读取配置文件[{}]出错.", configFile);
 			return configMap;
 		}
 		int seperateIndex;

@@ -1,6 +1,8 @@
 package com.renby.tool;
 
 import java.io.File;
+import java.io.UnsupportedEncodingException;
+import java.net.URLDecoder;
 import java.util.Map;
 
 public class ToolUtils {
@@ -29,6 +31,11 @@ public class ToolUtils {
 	}
 	
 	public static String getAbstractClassPathFilePath(String filename){
-		return Thread.currentThread().getContextClassLoader().getResource("").getPath().substring(1) + filename;
+		try {
+			String parent = Thread.currentThread().getContextClassLoader().getResource("").getPath().substring(1);
+			return URLDecoder.decode(parent,"UTF-8") + filename;
+		} catch (UnsupportedEncodingException e) {
+			throw new RuntimeException("系统不支持UTF-8字符集-_-");
+		}
 	}
 }
