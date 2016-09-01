@@ -20,7 +20,7 @@ import com.renby.tool.processor.sql.SqlUtils;
 public class SqlColumnValueReplaceProcessor implements ILineProcessor {
 	private static Map<String, Map<String, String>> configs = new HashMap<String, Map<String, String>>();
 	/** 插入语句匹配正则表达式 */
-	public static String REGEX_INSERT_STR = "^ *(insert) +into +([0-9a-zA-Z_$#]+) *\\((.+)\\) *values *\\((.+)\\) *;";
+	public static String REGEX_INSERT_STR = "^ *(insert) +into +([0-9a-zA-Z_$#]+) *\\((.+)\\) *values *\\((.+)\\) *;{0,1} *";
 	/** 插入语句匹配器 */
 	public static Pattern REGEX_INSERT = Pattern.compile(REGEX_INSERT_STR, Pattern.CASE_INSENSITIVE);
 	/** 字段或者值之间的间隔符号 */
@@ -46,11 +46,12 @@ public class SqlColumnValueReplaceProcessor implements ILineProcessor {
 		}
 		SqlInfo info = getSqlInfo(sql);
 		if (info == null) {
-			logger.debug("直接输出：{}", sql);
+			logger.debug("非SQL，直接输出：{}", sql);
 			return sql + FileHandler.LINE_END;
 		}
 		Map<String, String> config = configs.get(info.talbe);
 		if (config == null) {
+			logger.debug("无配置，直接输出：{}", sql);
 			return sql + FileHandler.LINE_END;
 		}
 		String newVal;
@@ -76,7 +77,6 @@ public class SqlColumnValueReplaceProcessor implements ILineProcessor {
 	private SqlInfo getSqlInfo(String sql) {
 		Matcher matcher = REGEX_INSERT.matcher(sql);
 		if (!matcher.find()) {
-			logger.error("插入SQL非法：{}", sql);
 			return null;
 		} else {
 			SqlInfo info = new SqlInfo();

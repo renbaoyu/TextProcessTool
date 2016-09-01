@@ -25,7 +25,7 @@ public class SqlUtils {
 		StringBuilder value = new StringBuilder();
 		for (int i = 0, startIndex = -1; i < valueString.length(); i++) {
 			c = valueString.charAt(i);
-			if (!isContent && i < valueString.length() - 1) {
+			if (!isContent) {
 				Matcher matcher = REGEX_NULL.matcher(valueString.substring(i));
 				if (matcher.find()) {
 					valsList.add(matcher.group(1).trim());
@@ -44,24 +44,17 @@ public class SqlUtils {
 				isContent = !isContent;
 				if (isContent) {
 					startIndex = i;
-					// 保存上一个值并开始记录新值
-					if (value.length() > 0) {
-						valsList.add(value.toString());
-					}
-					value.setLength(0);
 				} else {
 					startIndex = -1;
-					// 值结束时加入结束的单引号
 					value.append(c);
+					// 保存上一个值并开始记录新值
+					valsList.add(value.toString());
+					value.setLength(0);
 				}
 			}
 			if (isContent) {
 				value.append(c);
 			}
-		}
-		// 最后一个字符为结束标志时，value不会添加到valsList，需要进行添加
-		if (value.length() > 0) {
-			valsList.add(value.toString());
 		}
 		return valsList.toArray(new String[0]);
 	}

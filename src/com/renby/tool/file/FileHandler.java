@@ -79,9 +79,7 @@ public class FileHandler {
 		}else{
 			File[] files = input.listFiles();
 			for (File file : files) {
-				if(operSet.isFilterPassed(file)){
-					processFolder(file, processor, operSet);
-				}
+				processFolder(file, processor, operSet);
 			}
 		}
 	}
