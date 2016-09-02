@@ -5,6 +5,11 @@ import java.util.List;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
+/**
+ * SQL工具类
+ * @author renbaoyu
+ *
+ */
 public class SqlUtils {
 	/** NULL匹配器 */
 	public static Pattern REGEX_NULL = Pattern.compile("^ *(null) *", Pattern.CASE_INSENSITIVE);
@@ -26,12 +31,14 @@ public class SqlUtils {
 		for (int i = 0, startIndex = -1; i < valueString.length(); i++) {
 			c = valueString.charAt(i);
 			if (!isContent) {
+				//匹配NULL值
 				Matcher matcher = REGEX_NULL.matcher(valueString.substring(i));
 				if (matcher.find()) {
 					valsList.add(matcher.group(1).trim());
 					i += matcher.group(0).length();
 					continue;
 				}
+				//匹配数值类型的值
 				matcher = REGEX_NUMBER.matcher(valueString.substring(i));
 				if (matcher.find()) {
 					valsList.add(matcher.group(1).trim());

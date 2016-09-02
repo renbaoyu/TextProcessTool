@@ -21,8 +21,8 @@ import com.renby.tool.processor.ILineProcessor;
 /**
  * 文件处理工具，输入的文件处理后输出到指定的另一文件中
  * 
- * @author Administrator
- *
+ * @author renbaoyu
+ * 
  */
 public class FileHandler {
 	/** 文件默认编码格式 */
@@ -39,7 +39,8 @@ public class FileHandler {
 	 * @param operSet
 	 *            文件设置
 	 */
-	public static void excute(ILineProcessor processor, FileOperationSet operSet) {
+	public static void execute(ILineProcessor processor,
+			FileOperationSet operSet) {
 		printInputInformation(operSet);
 		File input = new File(operSet.getInputPath());
 		if (!input.exists()) {
@@ -50,11 +51,7 @@ public class FileHandler {
 		if (!output.exists()) {
 			output.mkdirs();
 		} else {
-			for (File file : output.listFiles()) {
-				if (!file.delete()) {
-					logger.error("删除文件失败：" + file.getName());
-				}
-			}
+			deleteFileOrFolder(output);
 		}
 		LogManager.getLogger().info("处理文件开始.");
 		processFolder(input, processor, operSet);
@@ -71,19 +68,20 @@ public class FileHandler {
 	 * @param operSet
 	 *            文件设置
 	 */
-	private static void processFolder(File input, ILineProcessor processor, FileOperationSet operSet) {
-		if(input.isFile()){
-			if(operSet.isFilterPassed(input)){
+	private static void processFolder(File input, ILineProcessor processor,
+			FileOperationSet operSet) {
+		if (input.isFile()) {
+			if (operSet.isFilterPassed(input)) {
 				processFile(input, processor, operSet);
 			}
-		}else{
+		} else {
 			File[] files = input.listFiles();
 			for (File file : files) {
 				processFolder(file, processor, operSet);
 			}
 		}
 	}
-	
+
 	/**
 	 * 执行文件处理
 	 * 
@@ -94,42 +92,48 @@ public class FileHandler {
 	 * @param operSet
 	 *            文件设置
 	 */
-	private static void processFile(File file, ILineProcessor processor, FileOperationSet operSet) {
-		File processedParent = new File(file.getParent().replace(operSet.getInputPath(), operSet.getOutputPath()));
-		if(!processedParent.exists()){
+	private static void processFile(File file, ILineProcessor processor,
+			FileOperationSet operSet) {
+		File processedParent = new File(file.getParent().replace(
+				operSet.getInputPath(), operSet.getOutputPath()));
+		if (!processedParent.exists()) {
 			processedParent.mkdirs();
 		}
 		File processedFile = new File(processedParent, file.getName());
+		BufferedReader reader = null;
+		OutputStreamWriter writer = null;
 		try {
-			BufferedReader reader = null;
-			OutputStreamWriter writer = null;
-			try {
-				reader = new BufferedReader(new InputStreamReader(new FileInputStream(file), operSet.getCharset()));
-				writer = new OutputStreamWriter(new FileOutputStream(processedFile), operSet.getCharset());
-			} catch (UnsupportedEncodingException e1) {
-				logger.error("指定的编码[{}]错误，请指定正确的字符集", operSet.getCharset());
-				closeFile(reader);
-				closeFile(writer);
-				return;
-			}
-			try {
-				for (String line = reader.readLine(); line != null; line = reader.readLine()) {
-					try{
-						writer.write(processor.process(line));
-					}catch(Exception e){
-						logger.error("处理文件异常", e);
-					}
-				}
-			} catch (IOException e) {
-				logger.error("读取文件错误");
-			} finally {
-				closeFile(reader);
-				closeFile(writer);
-			}
-			logger.info("已处理文件：" + file.getName());
+			reader = new BufferedReader(new InputStreamReader(
+					new FileInputStream(file), operSet.getCharset()));
+			writer = new OutputStreamWriter(
+					new FileOutputStream(processedFile), operSet.getCharset());
+		} catch (UnsupportedEncodingException e) {
+			logger.error("指定的编码[{}]错误，请指定正确的字符集", operSet.getCharset());
+			closeFile(reader);
+			closeFile(writer);
+			return;
 		} catch (FileNotFoundException e) {
-			logger.error("配置文件不存在.");
+			logger.error("文件[{}]不存在", file.getAbsolutePath());
+			closeFile(reader);
+			closeFile(writer);
+			return;
 		}
+		try {
+			for (String line = reader.readLine(); line != null; line = reader
+					.readLine()) {
+				try {
+					writer.write(processor.process(line));
+				} catch (Exception e) {
+					logger.error("处理文件异常", e);
+				}
+			}
+		} catch (IOException e) {
+			logger.error("读取文件错误");
+		} finally {
+			closeFile(reader);
+			closeFile(writer);
+		}
+		logger.info("已处理文件：" + file.getAbsolutePath());
 
 	}
 
@@ -153,12 +157,35 @@ public class FileHandler {
 		}
 	}
 	
-	private static void printInputInformation(FileOperationSet operSet){
+	/**
+	 * 删除文件/文件夹
+	 * @param target
+	 */
+	private static void deleteFileOrFolder(File target) {
+		if (target == null) {
+			return;
+		}
+		if(target.isFile()){
+			if (!target.delete()) {
+				logger.error("删除文件失败：" + target.getAbsolutePath());
+			}
+			return;
+		}
+		for (File file : target.listFiles()) {
+			deleteFileOrFolder(file);
+		}
+		if (!target.delete()) {
+			logger.error("删除文件夹失败：" + target.getAbsolutePath());
+		}
+	}
+
+	private static void printInputInformation(FileOperationSet operSet) {
 		logger.info("******************************************************************");
 		logger.info("*待处理文件或目录:{}", operSet.getInputPath());
 		logger.info("*输出目录　　　　:{}", operSet.getOutputPath());
 		logger.info("*待处理文件字符集:{}", operSet.getCharset());
-		logger.info("*处理的文件类型　:{}", ToolUtils.getNewValue(operSet.getFilter(), "All"));
+		logger.info("*处理的文件类型　:{}",
+				ToolUtils.getNonEmptyValue(operSet.getFilter(), "All"));
 		logger.info("******************************************************************");
 	}
 }

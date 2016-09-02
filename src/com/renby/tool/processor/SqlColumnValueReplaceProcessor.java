@@ -12,15 +12,15 @@ import com.renby.tool.file.FileHandler;
 import com.renby.tool.processor.sql.SqlUtils;
 
 /**
- * 实现SQL插入语句分析，替换指定字段的值（不支持注释）
+ * 实现SQL插入语句分析，替换指定字段的值
  * 
- * @author Administrator
+ * @author renbaoyu
  *
  */
 public class SqlColumnValueReplaceProcessor implements ILineProcessor {
 	private static Map<String, Map<String, String>> configs = new HashMap<String, Map<String, String>>();
 	/** 插入语句匹配正则表达式 */
-	public static String REGEX_INSERT_STR = "^ *(insert) +into +([0-9a-zA-Z_$#]+) *\\((.+)\\) *values *\\((.+)\\) *;{0,1} *";
+	public static String REGEX_INSERT_STR = "^ *(insert) +into +([0-9a-zA-Z_$#]+) *\\((.+)\\) *values *\\((.+)\\) *(;{0,1}) *(--.*){0,1}$";
 	/** 插入语句匹配器 */
 	public static Pattern REGEX_INSERT = Pattern.compile(REGEX_INSERT_STR, Pattern.CASE_INSENSITIVE);
 	/** 字段或者值之间的间隔符号 */
@@ -84,6 +84,8 @@ public class SqlColumnValueReplaceProcessor implements ILineProcessor {
 			info.talbe = matcher.group(2);
 			info.cols = matcher.group(3).split(",");
 			info.vals = SqlUtils.SqlValueSeperate(matcher.group(4));
+			info.endFlag = ToolUtils.getNonEmptyValue(matcher.group(5), "");
+			info.note = ToolUtils.getNonEmptyValue(matcher.group(6), "");
 			if (info.cols.length != info.vals.length) {
 				logger.error("SQL解析错误：字段数量与值数量不一致.");
 				logger.error("异常SQL:{}", sql);
@@ -125,7 +127,7 @@ public class SqlColumnValueReplaceProcessor implements ILineProcessor {
 			sql.append(val).append(SEPARATOR);
 		}
 		sql.setLength(sql.length() - SEPARATOR.length());
-		sql.append(");");
+		sql.append(")").append(info.endFlag).append(info.note);
 		return sql.toString();
 	}
 
@@ -151,20 +153,28 @@ public class SqlColumnValueReplaceProcessor implements ILineProcessor {
 				logger.error("已跳过异常配置：{}={}", entry.getKey(), entry.getValue());
 			}
 		}
-		isUppercase = ToolUtils.getNewValue(System.getProperty(KEY_SQL_ISUPPERCASE), isUppercase);
+		isUppercase = ToolUtils.getNonEmptyValue(System.getProperty(KEY_SQL_ISUPPERCASE), isUppercase);
 	}
 
 	/**
 	 * SQL语句结构体
 	 * 
-	 * @author Administrator
+	 * @author renbaoyu
 	 *
 	 */
 	private class SqlInfo {
+		/** 操作类型 */
 		public String opetation;
+		/** 表名 */
 		public String talbe;
+		/** 字段数组 */
 		public String[] cols;
+		/** 字段值数组 */
 		public String[] vals;
+		/** SQL结束符号 */
+		public String endFlag;
+		/** 注释 */
+		public String note;
 	}
 
 }

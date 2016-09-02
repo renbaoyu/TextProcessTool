@@ -3,6 +3,11 @@ package com.renby.tool.processor;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
+/**
+ * 行处理接口
+ * @author renbaoyu
+ *
+ */
 public interface ILineProcessor {
 	public Logger logger = LogManager.getLogger();
 

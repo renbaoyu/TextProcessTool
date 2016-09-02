@@ -6,6 +6,12 @@ import com.renby.tool.file.FileHandler;
 import com.renby.tool.file.FileOperationSet;
 import com.renby.tool.processor.ILineProcessor;
 import com.renby.tool.processor.SqlColumnValueReplaceProcessor;
+
+/**
+ * SQL处理工具入口
+ * @author renbaoyu
+ *
+ */
 public class SqlColumnValueReplaceTool {
 	/** 配置文件名 */
 	public static final String CONFIG_FILE = "SqlConfig.cfg";
@@ -18,12 +24,12 @@ public class SqlColumnValueReplaceTool {
 		ConfigProvider.initSystemProperty();
 		String inputPath = ToolUtils.getAbstractUserFilePath("sql");
 		String outputPath = ToolUtils.getAbstractUserFilePath("output");
-		String encording = ToolUtils.getNewValue(System.getProperty(KEY_SQL_ENCORDING), FileHandler.FILE_ENCORDING);
+		String encording = ToolUtils.getNonEmptyValue(System.getProperty(KEY_SQL_ENCORDING), FileHandler.FILE_ENCORDING);
 		String filter = System.getProperty(KEY_SQL_FILTER);
 		inputPath = args.length > 0 ? args[0] : inputPath;
 		
 		ILineProcessor processor = new SqlColumnValueReplaceProcessor(ConfigProvider.getConfigMap(CONFIG_FILE));
-		FileHandler.excute(processor, new FileOperationSet(inputPath, outputPath, encording, filter));
+		FileHandler.execute(processor, new FileOperationSet(inputPath, outputPath, encording, filter));
 		System.exit(0);
 	}
 }

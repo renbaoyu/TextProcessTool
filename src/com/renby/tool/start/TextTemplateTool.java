@@ -7,6 +7,11 @@ import com.renby.tool.file.FileOperationSet;
 import com.renby.tool.processor.AttributeReplaceProcessor;
 import com.renby.tool.processor.ILineProcessor;
 
+/**
+ * 文本模版化工具入口
+ * @author renbaoyu
+ *
+ */
 public class TextTemplateTool {
 	/** 配置文件名 */
 	public static final String CONFIG_FILE = "TemplateConfig.cfg";
@@ -19,13 +24,13 @@ public class TextTemplateTool {
 		ConfigProvider.initSystemProperty();
 		String inputPath = ToolUtils.getAbstractUserFilePath("template");
 		String outputPath = ToolUtils.getAbstractUserFilePath("output");
-		String encording = ToolUtils.getNewValue(System.getProperty(TEMPLATE_ENCORDING_KEY),
+		String encording = ToolUtils.getNonEmptyValue(System.getProperty(TEMPLATE_ENCORDING_KEY),
 				FileHandler.FILE_ENCORDING);
 		String filter = System.getProperty(KEY_TEMPLATE_FILTER);
 
 		inputPath = args.length > 0 ? args[0] : inputPath;
 		ILineProcessor processor = new AttributeReplaceProcessor(ConfigProvider.getConfigMap(CONFIG_FILE));
-		FileHandler.excute(processor, new FileOperationSet(inputPath, outputPath, encording, filter));
+		FileHandler.execute(processor, new FileOperationSet(inputPath, outputPath, encording, filter));
 		System.exit(0);
 	}
 }

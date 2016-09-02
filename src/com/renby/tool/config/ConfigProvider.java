@@ -17,7 +17,7 @@ import com.renby.tool.ToolUtils;
 /**
  * Ã·π©≈‰÷√
  * 
- * @author Administrator
+ * @author renbaoyu
  *
  */
 public class ConfigProvider {
@@ -73,7 +73,7 @@ public class ConfigProvider {
 		for (Entry<String, String> entry : config.entrySet()) {
 			System.setProperty(entry.getKey(), entry.getValue());
 		}
-		CONFIG_ENCORDING = ToolUtils.getNewValue(System.getProperty(KEY_CONFIG_ENCORDING),
+		CONFIG_ENCORDING = ToolUtils.getNonEmptyValue(System.getProperty(KEY_CONFIG_ENCORDING),
 				CONFIG_ENCORDING);
 	}
 }

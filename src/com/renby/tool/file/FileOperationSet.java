@@ -6,6 +6,11 @@ import java.util.Set;
 
 import com.renby.tool.ToolUtils;
 
+/**
+ * 文件操作信息
+ * @author renbaoyu
+ *
+ */
 public class FileOperationSet {
 	private String inputPath;
 	private String outputPath;

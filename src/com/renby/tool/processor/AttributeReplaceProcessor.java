@@ -9,7 +9,7 @@ import com.renby.tool.file.FileHandler;
 /**
  * 实现简单的EL表达式，将属性替换为实际值
  * 
- * @author Administrator
+ * @author renbaoyu
  *
  */
 public class AttributeReplaceProcessor implements ILineProcessor {
